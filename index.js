@@ -12,9 +12,6 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 
-// api
-
-
 // routes
 app.get('/',(req,res)=>{
     res.status(200).json({message:'app is running'})
