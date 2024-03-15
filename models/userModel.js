@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-delete mongoose.models.User;
-
 const userSchema = new mongoose.Schema({
     fullname: {
         type: String,
@@ -11,18 +9,21 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        // Add validation for email format
+        match: /^\S+@\S+\.\S+$/,
     },
+    phoneNumbers: [{
+        type: String,
+        // Add validation for phone number format
+        match: /^\+?([0-9]{1,4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+    }],
     password: {
         type: String,
         required: true,
     },
-    phoneNumber: {
-        type: String,
-        required: true,
-    },
-    address: {
-        type: String,
-        required: true,
+    contactPreferences: {
+        email: { type: Boolean, default: false },
+        phoneNumber: { type: Boolean, default: false },
     },
 });
 

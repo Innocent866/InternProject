@@ -1,4 +1,3 @@
-// index.js
 import express from 'express';
 import cors from 'cors';
 import connect from './database/mongodb.js';
@@ -21,24 +20,24 @@ app.use(morgan('dev'));
 app.use('/', userRoutes);
 app.use('/', authRoutes);
 
-
+// Error Handling Middleware
 app.use((req, res) => {
-    res.status(404).json({ message: "That route doesn't exist" });
+  res.status(404).json({ message: "That route doesn't exist" });
 });
 
 connect()
-    .then(() => {
-        app.listen(port, () => {
-            console.log(`Server is connected to http://localhost:${port}`);
-        }).on('error', (error) => {
-            console.log('Cannot connect to the server:', error);
-        });
-        
-        process.on('SIGINT', () => {
-            console.log('Server is shutting down...');
-            process.exit(0);
-        });
-    })
-    .catch((error) => {
-        console.log('Invalid database connection:', error);
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is connected to http://localhost:${port}`);
+    }).on('error', (error) => {
+      console.log('Cannot connect to the server:', error);
     });
+
+    process.on('SIGINT', () => {
+      console.log('Server is shutting down...');
+      process.exit(0);
+    });
+  })
+  .catch((error) => {
+    console.log('Invalid database connection:', error);
+  });

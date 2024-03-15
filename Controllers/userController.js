@@ -48,7 +48,6 @@ const updateUserDetails = async (req, res) => {
 
         user.fullname = fullname || user.fullname;
         user.phoneNumber = phoneNumber || user.phoneNumber;
-        user.address = address || user.address;
         
         if (password) {
             user.password = password;
@@ -81,7 +80,33 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const updateUserContactPreferences = async (req, res) => {
+    const { email, phoneNumber, preferences } = req.body;
+
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update the user's contact preferences
+        user.contactPreferences = {
+            email: preferences.includes('email'),
+            phoneNumber: preferences.includes('phoneNumber'),
+        };
+
+        await user.save();
+
+        res.status(200).json({ message: 'Contact preferences updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 
   
 
-export { getOneUser, getAllUsers, updateUserDetails, deleteUser };
+export { getOneUser, getAllUsers, updateUserDetails, deleteUser, updateUserContactPreferences };
