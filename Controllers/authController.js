@@ -62,8 +62,9 @@ const register = async (req, res) => {
 
         // Save the user to the database
         await newUser.save();
+        const accessToken = generateAccessToken(newUser);
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully', accessToken });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
