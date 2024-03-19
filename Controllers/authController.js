@@ -63,10 +63,14 @@ const register = async (req, res) => {
         // Save the user to the database
         await newUser.save();
 
-        res.status(201).json({ message: 'User registered successfully' });
+     // Generate access token
+     const accessToken = generateAccessToken(newUser);
+
+     // Return the user details along with the access token
+     res.status(201).json({ message: 'User registered successfully', user: { _id: newUser._id, fullname, email, phonenumber }, accessToken });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+     console.error(error);
+     res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -89,7 +93,7 @@ const login = async (req, res) => {
         const accessToken = generateAccessToken(user);
         const successMessage = `Welcome back, ${user.email}! Login successful.`;
 
-        res.status(200).json({ message: successMessage, accessToken });
+        res.status(200).json({ message: `Welcome back, ${user.email}! Login successful.`, user: { _id: user._id, fullname: user.fullname, email: user.email, phonenumber: user.phonenumber }, accessToken });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
