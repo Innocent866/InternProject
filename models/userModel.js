@@ -22,10 +22,12 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     contactPreferences: {
-        email: { type: Boolean, default: false },
-        phoneNumber: { type: Boolean, default: false },
+        type: String,
+        enum: ['email', 'phone', 'both'],
+        required: true,
+
     },
-});
+}, {timestamps: true});
 
 const User = mongoose.model('User', userSchema);
 

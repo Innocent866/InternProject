@@ -18,7 +18,7 @@ const CarSchema = new Schema({
     },
     profileColor: {
         type: String,
-        enum: ["yellow", "green", "red"]
+        required: true
     },
     user: {
         type: mongoose.Types.ObjectId,
