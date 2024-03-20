@@ -4,7 +4,6 @@ import connect from './database/mongodb.js';
 import morgan from 'morgan';
 import userRoutes from './routes/userRoute.js';
 import authRoutes from './routes/authRoutes.js';
-import carRoutes from './routes/carRoutes.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -20,7 +19,6 @@ app.use(morgan('dev'));
 // Routes
 app.use('/', userRoutes);
 app.use('/', authRoutes);
-app.use("/car", carRoutes);
 
 // Error Handling Middleware
 app.use((req, res) => {
