@@ -42,7 +42,8 @@ const generateAccessToken = (user) => {
 
 const register = async (req, res) => {
     try {
-        const { fullname, email, phonenumber, password } = req.body;
+        const { fullname, email, phoneNumber, password, contactPreferences } =
+          req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -54,10 +55,11 @@ const register = async (req, res) => {
 
         // Create a new user
         const newUser = new User({
-            fullname,
-            email,
-            phonenumber,
-            password: hashedPassword,
+          fullname,
+          email,
+          phoneNumber,
+          password: hashedPassword,
+          contactPreferences,
         });
 
         // Save the user to the database
@@ -67,7 +69,13 @@ const register = async (req, res) => {
      const accessToken = generateAccessToken(newUser);
 
      // Return the user details along with the access token
-     res.status(201).json({ message: 'User registered successfully', user: { _id: newUser._id, fullname, email, phonenumber }, accessToken });
+     res
+       .status(201)
+       .json({
+         message: "User registered successfully",
+         user: { _id: newUser._id, fullname, email, phoneNumber },
+         accessToken,
+       });
     } catch (error) {
      console.error(error);
      res.status(500).json({ message: 'Internal Server Error' });
