@@ -37,6 +37,18 @@ const getAllCars = async (req, res) => {
   }
 };
 
+const getACar = async (req, res) => {
+  const {carId} = req.params
+
+  try {
+    const car = await Car.findById({_id: carId});
+    res.status(200).json({success: true, car})
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: error });
+  }
+}
+
 const deleteCar = async (req, res) => {
   const { carId } = req.params;
 
@@ -70,4 +82,4 @@ const editCarProfile = async (req, res) => {
   }
 };
 
-export { createCarProfile, getAllCars, deleteCar, editCarProfile };
+export { createCarProfile, getAllCars, deleteCar, editCarProfile, getACar };

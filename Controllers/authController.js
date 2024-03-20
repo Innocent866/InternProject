@@ -43,7 +43,8 @@ const generateAccessToken = (user) => {
 
 const register = async (req, res) => {
     try {
-        const { fullname, email, phonenumber, password, contactPreferences } = req.body;
+        const { fullname, email, phoneNumber, password, contactPreferences } =
+          req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -55,21 +56,30 @@ const register = async (req, res) => {
 
         // Create a new user
         const newUser = new User({
-            fullname,
-            email,
-            phonenumber,
-            password: hashedPassword,
-            contactPreferences
+          fullname,
+          email,
+          phoneNumber,
+          password: hashedPassword,
+          contactPreferences,
         });
 
         // Save the user to the database
         await newUser.save();
-        const accessToken = generateAccessToken(newUser);
 
-        res.status(201).json({ message: 'User registered successfully', accessToken, success: true });
+     // Generate access token
+     const accessToken = generateAccessToken(newUser);
+
+     // Return the user details along with the access token
+     res
+       .status(201)
+       .json({
+         message: "User registered successfully",
+         user: { _id: newUser._id, fullname, email, phoneNumber },
+         accessToken,
+       });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+     console.error(error);
+     res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -92,7 +102,7 @@ const login = async (req, res) => {
         const accessToken = generateAccessToken(user);
         const successMessage = `Welcome back, ${user.email}! Login successful.`;
 
-        res.status(200).json({ message: successMessage, accessToken, success: true });
+        res.status(200).json({ message: `Welcome back, ${user.email}! Login successful.`, user: { _id: user._id, fullname: user.fullname, email: user.email, phonenumber: user.phonenumber }, accessToken });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
