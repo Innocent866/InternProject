@@ -27,14 +27,17 @@ const generateResetToken = async (user) => {
 };
 
 const generateAccessToken = (user) => {
-    const secretKey = process.env.JWT_SECRET || 'defaultSecretKey';
-    const payload = {
-        user: {
-            id: user._id,
-            email: user.email,
-            fullname: user.fullname
-        },
-    };
+  const secretKey = process.env.JWT_SECRET || "defaultSecretKey";
+  const payload = {
+    user: {
+      id: user._id,
+      email: user.email,
+      fullname: user.fullname,
+      location: user.location,
+      phoneNumber: user.phoneNumber,
+      contactPreferences: user.contactPreferences,
+    },
+  };
 
   return jwt.sign(payload, secretKey, { expiresIn: "1h" });
 };
@@ -108,19 +111,17 @@ const login = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const successMessage = `Welcome back, ${user.email}! Login successful.`;
 
-    res
-      .status(200)
-      .json({
-        message: `Welcome back, ${user.email}! Login successful.`,
-        user: {
-          _id: user._id,
-          fullname: user.fullname,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          location: user.location,
-        },
-        accessToken,
-      });
+    res.status(200).json({
+      message: `Welcome back, ${user.email}! Login successful.`,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        location: user.location,
+      },
+      accessToken,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -195,6 +196,35 @@ const resetPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const updatePassword = async (req, res) => {
+  const { password, NewPassword } = req.body;
+
+  const { id } = req.user;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Invalid current password" });
+    }
+
+    const hashedPassword = await bcrypt.hash(NewPassword, 10);
+
+    user.password = hashedPassword;
+
+    await user.save();
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(404).json(error);
   }
 };
 

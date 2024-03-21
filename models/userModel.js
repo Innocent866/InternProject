@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "unknown",
     },
+
+    NewPassword: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
