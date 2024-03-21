@@ -1,37 +1,45 @@
-const express  = require("express");
-const cors = require('cors')
-const app = express()
-const connect = require('./database/mongodb')
-const port = process.env.PORT || 5858
+import express from 'express';
+import cors from 'cors';
+import connect from './database/mongodb.js';
+import morgan from 'morgan';
+import userRoutes from './routes/userRoute.js';
+import authRoutes from './routes/authRoutes.js';
+import carRoutes from './routes/carRoutes.js';
+import dotenv from 'dotenv';
 
-const morgan = require("morgan");
+dotenv.config();
 
-// middleware
-app.use(cors())
-app.use(express.json())
-app.use(morgan('dev'))
+const app = express();
+const port = process.env.PORT || 5858;
 
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(morgan('dev'));
 
-// routes
-app.get('/',(req,res)=>{
-    res.status(200).json({message:'app is running'})
-})
+// Routes
+app.use('/', userRoutes);
+app.use('/', authRoutes);
+app.use("/car", carRoutes);
 
-app.use((req,res)=>{
-    res.status(404).json({message:"that route doesn't exist"})
-})
+// Error Handling Middleware
+app.use((req, res) => {
+  res.status(404).json({ message: "That route doesn't exist" });
+});
 
 connect()
-.then(()=>{
-    try{
-        app.listen(port,(req,res)=>{
-            console.log(`Server is Connected to http://localhost:${port}`);
-        })
-    }
-    catch(error){
-        console.log('can not connect to the server');
-    }
-})
-.catch((error)=>{
-    console.log("invalid database connection...!",error);
-})
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is connected to http://localhost:${port}`);
+    }).on('error', (error) => {
+      console.log('Cannot connect to the server:', error);
+    });
+
+    process.on('SIGINT', () => {
+      console.log('Server is shutting down...');
+      process.exit(0);
+    });
+  })
+  .catch((error) => {
+    console.log('Invalid database connection:', error);
+  });
